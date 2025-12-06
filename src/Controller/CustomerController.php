@@ -23,12 +23,22 @@ class CustomerController {
         // }
     }
 
+    protected function getRequestData(): array {
+        // Ambiente de teste
+        if (defined('PHPUNIT_RUNNING') && isset($GLOBALS['mock_http_input'])) { 
+            return json_decode($GLOBALS['mock_http_input'], true) ?? [];
+        }
+
+        // Produção
+        return json_decode(file_get_contents('php://input'), true) ?? [];
+    }
+
     /**
      * Define o cabeçalho Content-Type para JSON e trata a resposta.
      * @param int $statusCode Código HTTP de resposta.
      * @param array $data Dados a serem serializados para JSON.
      */
-    private function respond(int $statusCode, array $data): void {
+    protected function respond(int $statusCode, array $data): void {
         header('Content-Type: application/json');
         http_response_code($statusCode);
         echo json_encode($data);
@@ -70,7 +80,7 @@ class CustomerController {
      * Inclui um novo cliente e seus endereços.
      */
     public function store(): void {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getRequestData();
 
         if (empty($data['customer']['name']) || empty($data['customer']['cpf']) || empty($data['addresses'])) {
             $this->respond(400, ['error' => 'Dados de cliente ou endereço incompletos.']);
@@ -114,7 +124,7 @@ class CustomerController {
      * Edita um cliente existente e seus endereços.
      */
     public function update(int $id): void {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getRequestData();
 
         if (!$this->repository->findById($id)) {
              $this->respond(404, ['error' => 'Cliente a ser atualizado não encontrado.']);
