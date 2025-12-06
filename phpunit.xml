@@ -25,6 +25,8 @@
     <php>
         <ini name="display_errors" value="On" />
         
-        <ini name="error_reporting" value="-1" /> 
+        <ini name="error_reporting" value="-1" />
+
+        <const name="PHPUNIT_RUNNING" value="true" />
     </php>
 </phpunit>
