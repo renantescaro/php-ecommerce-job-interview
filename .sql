@@ -23,6 +23,7 @@ CREATE TABLE addresses (
 -- Usuários
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL
+    name VARCHAR(100) UNIQUE NOT NULL,
+    login VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(400) NOT NULL
 );
