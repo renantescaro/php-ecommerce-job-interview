@@ -35,7 +35,6 @@ if (strpos($uri, 'api/') === 0) {
 
 $resource = array_shift($routeParts);
 $id = null;
-
 $controller = null;
 $action = null;
 

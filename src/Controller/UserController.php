@@ -5,6 +5,7 @@ use App\Config\Database;
 use App\Controller\BaseController;
 use App\Model\User;
 use App\Repository\UserRepository;
+use App\Service\AuthGuardMiddleware;
 use App\Service\PasswordService;
 use Exception;
 
@@ -12,15 +13,11 @@ class UserController extends BaseController {
     private UserRepository $repository;
 
     public function __construct() {
+        AuthGuardMiddleware::requireLogin();
+
         $db = new Database();
         $this->repository = new UserRepository($db);
         $this->passwordService = new PasswordService();
-
-        // if (!AuthService::isLoggedIn()) {
-        //     http_response_code(401); 
-        //     echo json_encode(['error' => 'Acesso não autorizado. Faça login.']);
-        //     exit();
-        // }
     }
 
     /**

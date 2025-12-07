@@ -1,33 +1,21 @@
 <?php
 namespace App\Controller;
 
+use App\Service\AuthService;
+use App\Controller\BaseController;
 use App\Config\Database;
+use App\Repository\UserRepository;
 use Exception;
 
-class AuthController {
+class AuthController extends BaseController {
     public function __construct() {
         $db = new Database();
-    }
-
-    protected function getRequestData(): array {
-        // Ambiente de teste
-        if (defined('PHPUNIT_RUNNING') && isset($GLOBALS['mock_http_input'])) { 
-            return json_decode($GLOBALS['mock_http_input'], true) ?? [];
+        $userRepository = new UserRepository($db);
+        $this->authService = new AuthService($userRepository);
+        
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
-
-        // Produção
-        return json_decode(file_get_contents('php://input'), true) ?? [];
-    }
-
-    /**
-     * Define o cabeçalho Content-Type para JSON e trata a resposta.
-     * @param int $statusCode Código HTTP de resposta.
-     * @param array $data Dados a serem serializados para JSON.
-     */
-    protected function respond(int $statusCode, array $data): void {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
-        echo json_encode($data);
     }
     
     /**
@@ -35,14 +23,56 @@ class AuthController {
      * Faz o login do usuário.
      */
     public function login(): void {
-        try {
-            $this->respond(200, ['data' => ['token' => 'aaa', 'userData' => 'vish']]);
+        $data = $this->getRequestData();
+
+        $login = $data['login'] ?? '';
+        $password = $data['password'] ?? '';
+
+        if (empty($login) || empty($password)) {
+            $this->respond(400, ['error' => 'Usuário e senha são obrigatórios.']);
+            return;
+        }
+
+        try {        
+            $user = $this->authService->authenticate($login, $password);
+
+            if ($user) {
+                $_SESSION['user_id'] = $user->id;
+                $_SESSION['login'] = $user->login;
+                $_SESSION['is_logged_in'] = true;
+
+                $this->respond(200, 
+                    ['message' => 'Login realizado com sucesso.',
+                        'user' => ['login' => $user->login
+                    ]]
+                );
+                return;
+            }
+
+            $this->respond(401, ['error' => 'Credenciais inválidas.']);
+
         } catch (Exception $e) {
             $this->respond(500, ['error' => 'Erro interno ao fazer login.', 'details' => $e->getMessage()]);
         }
     }
 
+    /**
+     * POST /api/auth/logout
+     * Encerra a sessão do usuário
+     */
     public function logout(): void {
-        $this->respond(200, ['data' => []]);
+        $_SESSION = [];
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        session_destroy();
+
+        $this->respond(200, ['message' => 'Logout realizado com sucesso.']);
     }
 }

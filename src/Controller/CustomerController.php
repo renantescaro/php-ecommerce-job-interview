@@ -6,22 +6,19 @@ use App\Controller\BaseController;
 use App\Model\Customer;
 use App\Model\Address;
 use App\Repository\CustomerRepository;
-use App\Repository\AddressRepository; 
+use App\Repository\AddressRepository;
+use App\Service\AuthGuardMiddleware;
 use Exception;
 
 class CustomerController extends BaseController {
     private CustomerRepository $repository;
 
     public function __construct() {
+        AuthGuardMiddleware::requireLogin();
+
         $db = new Database();
         $addressRepository = new AddressRepository($db);
         $this->repository = new CustomerRepository($db, $addressRepository);
-
-        // if (!AuthService::isLoggedIn()) {
-        //     http_response_code(401); 
-        //     echo json_encode(['error' => 'Acesso não autorizado. Faça login.']);
-        //     exit();
-        // }
     }
     
     /**

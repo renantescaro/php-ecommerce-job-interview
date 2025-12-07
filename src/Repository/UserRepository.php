@@ -81,6 +81,25 @@ class UserRepository {
     }
 
     /**
+     * Busca um usuário pelo login.
+     * @param string $login O login do usuário.
+     * @return User|null Retorna o objeto User ou null se não encontrado.
+     */
+    function findByLogin(string $login) {
+        $sql = "SELECT * FROM users WHERE login = :login";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':login', $login, PDO::PARAM_STR);
+        $stmt->execute();
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) {
+            return null;
+        }
+
+        return $this->createUserFromData($data);
+    }
+
+    /**
      * Atualiza um usuário existente.
      * @param User $user Objeto User com ID preenchido.
      * @return bool Sucesso na operação.
