@@ -2,46 +2,26 @@
 namespace App\Controller;
 
 use App\Config\Database;
+use App\Controller\BaseController;
 use App\Model\Customer;
 use App\Model\Address;
 use App\Repository\CustomerRepository;
 use App\Repository\AddressRepository; 
 use Exception;
 
-class CustomerController {
+class CustomerController extends BaseController {
     private CustomerRepository $repository;
 
     public function __construct() {
         $db = new Database();
         $addressRepository = new AddressRepository($db);
-        $this->repository = new CustomerRepository($db, $addressRepository); 
+        $this->repository = new CustomerRepository($db, $addressRepository);
 
         // if (!AuthService::isLoggedIn()) {
         //     http_response_code(401); 
         //     echo json_encode(['error' => 'Acesso não autorizado. Faça login.']);
         //     exit();
         // }
-    }
-
-    protected function getRequestData(): array {
-        // Ambiente de teste
-        if (defined('PHPUNIT_RUNNING') && isset($GLOBALS['mock_http_input'])) { 
-            return json_decode($GLOBALS['mock_http_input'], true) ?? [];
-        }
-
-        // Produção
-        return json_decode(file_get_contents('php://input'), true) ?? [];
-    }
-
-    /**
-     * Define o cabeçalho Content-Type para JSON e trata a resposta.
-     * @param int $statusCode Código HTTP de resposta.
-     * @param array $data Dados a serem serializados para JSON.
-     */
-    protected function respond(int $statusCode, array $data): void {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
-        echo json_encode($data);
     }
     
     /**
