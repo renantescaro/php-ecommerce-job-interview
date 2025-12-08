@@ -14,13 +14,13 @@ class CustomerController extends BaseController {
     private CustomerRepository $repository;
 
     public function __construct() {
-        AuthGuardMiddleware::requireLogin();
+        $this->userId = AuthGuardMiddleware::requireLogin();
 
         $db = new Database();
         $addressRepository = new AddressRepository($db);
         $this->repository = new CustomerRepository($db, $addressRepository);
     }
-    
+
     /**
      * GET /api/customers
      * Lista todos os clientes.

@@ -13,7 +13,7 @@ class UserController extends BaseController {
     private UserRepository $repository;
 
     public function __construct() {
-        AuthGuardMiddleware::requireLogin();
+        $this->userId = AuthGuardMiddleware::requireLogin();
 
         $db = new Database();
         $this->repository = new UserRepository($db);
