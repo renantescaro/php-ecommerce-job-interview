@@ -9,6 +9,8 @@ use App\Service\JwtService;
 use Exception;
 
 class AuthController extends BaseController {
+    private AuthService $authService;
+    private JwtService $jwtService;
 
     public function __construct() {
         $db = new Database();
@@ -52,6 +54,7 @@ class AuthController extends BaseController {
             }
 
             $this->respond(401, ['error' => 'Credenciais inválidas.']);
+            return;
 
         } catch (Exception $e) {
             $this->respond(500, ['error' => 'Erro interno ao fazer login.', 'details' => $e->getMessage()]);

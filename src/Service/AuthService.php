@@ -9,6 +9,7 @@ use App\Model\User;
  */
 class AuthService {
     private UserRepository $userRepository;
+    private PasswordService $passwordService;
 
     public function __construct(UserRepository $userRepository) {
         $this->userRepository = $userRepository;
