@@ -13,11 +13,6 @@ class AuthService {
     public function __construct(UserRepository $userRepository) {
         $this->userRepository = $userRepository;
         $this->passwordService = new PasswordService();
-        
-        // Garante que a sessão esteja iniciada antes de qualquer uso
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
     }
 
     /**
@@ -38,18 +33,5 @@ class AuthService {
         }
 
         return null; 
-    }
-
-    /**
-     * Verifica se o usuário está logado.
-     * Deve ser chamada pelo AuthGuard Middleware.
-     * @return bool
-     */
-    public static function isLoggedIn(): bool {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
     }
 }

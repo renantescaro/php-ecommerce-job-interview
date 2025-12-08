@@ -44,8 +44,6 @@ if ($resource === 'auth') {
 
     if ($method === 'POST' && $action === 'login') {
         $controller->login();
-    } elseif ($method === 'POST' && $action === 'logout') {
-        $controller->logout();
     } else {
         http_response_code(405);
         echo json_encode(['error' => 'Method Not Allowed']);
