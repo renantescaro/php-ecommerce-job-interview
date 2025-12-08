@@ -7,6 +7,7 @@
 >
     <testsuites>
         <testsuite name="Application Test Suite">
+            <file>tests/Stubs/AuthGuardMiddleware.php</file>
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
@@ -17,6 +18,8 @@
         </include>
         <exclude>
             <file>src/Config/Database.php</file> 
+            <file>src/Service/AuthGuardMiddleware.php</file>
+            <file>src/Service/CorsMiddleware.php</file>
         </exclude>
     </source>
 

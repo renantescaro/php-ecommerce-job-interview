@@ -4,7 +4,6 @@ namespace App\Repository;
 use PDO;
 use App\Config\Database;
 use App\Model\User;
-use App\Repository\AddressRepository;
 use Exception;
 
 class UserRepository {
@@ -109,7 +108,7 @@ class UserRepository {
      * @param User $user Objeto User com ID preenchido.
      * @return bool Sucesso na operação.
      */
-    public function update(User $user, array $addresses): bool {
+    public function update(User $user): bool {
         $this->db->beginTransaction();
         
         try {
