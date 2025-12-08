@@ -96,7 +96,12 @@ class UserRepository {
             return null;
         }
 
-        return $this->createUserFromData($data);
+        return new User(
+            (int)$data['id'], 
+            $data['name'], 
+            $data['login'], 
+            $data['password'], 
+        );
     }
 
     /**
@@ -155,10 +160,10 @@ class UserRepository {
      */
     private function createUserFromData(array $data): User {
         return new User(
-            (int)$data['id'], 
-            $data['name'], 
-            $data['login'], 
-            $data['password'], 
+            (int)$data['id'],
+            $data['name'],
+            $data['login'],
+            "",
         );
     }
 }
