@@ -7,6 +7,10 @@ use Exception;
 
 class Database {
     private ?PDO $conn = null;
+    private string $host;
+    private string $db_name;
+    private string $username;
+    private string $password;
 
     public function __construct() {
         $this->host = $_ENV['DB_HOST'];

@@ -12,6 +12,7 @@ use Exception;
 class UserController extends BaseController {
     private UserRepository $repository;
     private PasswordService $passwordService;
+    protected int $userId;
 
     public function __construct() {
         $this->userId = AuthGuardMiddleware::requireLogin();
