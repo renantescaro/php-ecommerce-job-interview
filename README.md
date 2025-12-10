@@ -7,6 +7,11 @@ A arquitetura segue o padrão RESTful API, aplicando princípios de **SOLID** e 
 
 ---
 
+## 🛠️ Swagger
+**Endpoint da documentação via Swagger:** http://localhost:8000/docs/
+
+---
+
 ## ⚙️ Requisitos Técnicos
 
 | Requisito | Detalhe | Status |
@@ -48,12 +53,14 @@ Siga os passos abaixo para preparar e subir a aplicação em seu ambiente de des
     DB_NAME=database_admin
     DB_USER=root
     DB_PASS=sua_senha
+    JWT_SECRET_KEY="chave de segurança do jwt"
     <br>
     #Configurações de TESTE (usado pelo PHPUnit)
     TEST_DB_HOST=localhost
     TEST_DB_NAME=database_admin_test
     TEST_DB_USER=root
     TEST_DB_PASS=sua_senha
+    JWT_SECRET_KEY="chave de segurança do jwt"
     </pre>
 
 ### 3. Execução da Aplicação (API)
