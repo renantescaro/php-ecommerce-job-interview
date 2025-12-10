@@ -27,9 +27,6 @@ $uri = strtok($uri, '?');
 // Remover barras extras
 $uri = trim($uri, '/');
 
-echo("aqui uri --->");
-echo($uri);
-
 if (strpos($uri, 'api/') === 0) {
     $routeParts = explode('/', substr($uri, 4));
 } else {
