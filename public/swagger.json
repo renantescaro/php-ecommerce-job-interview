@@ -1,0 +1,605 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Gerenciamento de Clientes e Usu\u00e1rios (E-commerce)",
+        "version": "1.0.0",
+        "description": "API simples para gerenciamento de clientes, usu\u00e1rios e autentica\u00e7\u00e3o JWT."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Servidor de Desenvolvimento Local"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Requer um Token JWT para acesso a rotas protegidas."
+            }
+        },
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Jo\u00e3o da Silva"
+                    },
+                    "login": {
+                        "type": "string",
+                        "example": "joao.silva@email.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "Hash BCRYPT da senha (campo omitido em retornos GET).",
+                        "writeOnly": true
+                    }
+                }
+            },
+            "Address": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "example": 101
+                    },
+                    "street": {
+                        "type": "string",
+                        "example": "Rua das Flores"
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "123-A"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "S\u00e3o Paulo"
+                    },
+                    "state": {
+                        "type": "string",
+                        "example": "SP"
+                    },
+                    "zipCode": {
+                        "type": "string",
+                        "example": "01000-000"
+                    }
+                }
+            },
+            "Customer": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "example": 5
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Maria Oliveira"
+                    },
+                    "birthDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": 485395200
+                    },
+                    "cpf": {
+                        "type": "string",
+                        "example": "111.222.333-44"
+                    },
+                    "rg": {
+                        "type": "string",
+                        "example": 987654321
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": 11988887777
+                    },
+                    "addresses": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Address"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Autentica\u00e7\u00e3o"
+                ],
+                "summary": "Autentica o usu\u00e1rio e retorna um JWT.",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "type": "string",
+                                        "example": "admin@site.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": 123456
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login bem-sucedido.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "description": "JWT para autoriza\u00e7\u00e3o em rotas protegidas."
+                                                },
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "login": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Usu\u00e1rio e senha s\u00e3o obrigat\u00f3rios."
+                    },
+                    "401": {
+                        "description": "Credenciais inv\u00e1lidas."
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor."
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Usu\u00e1rios"
+                ],
+                "summary": "Lista todos os usu\u00e1rios.",
+                "operationId": "listUsers",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de usu\u00e1rios.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/User"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso n\u00e3o autorizado (Token inv\u00e1lido ou ausente)."
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Usu\u00e1rios"
+                ],
+                "summary": "Cria um novo usu\u00e1rio.",
+                "operationId": "createUser",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "user"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "login": {
+                                                "type": "string"
+                                            },
+                                            "password": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usu\u00e1rio criado com sucesso."
+                    },
+                    "400": {
+                        "description": "Dados de usu\u00e1rio incompletos."
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": [
+                    "Usu\u00e1rios"
+                ],
+                "summary": "Retorna um usu\u00e1rio espec\u00edfico.",
+                "operationId": "getUserById",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do usu\u00e1rio.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usu\u00e1rio n\u00e3o encontrado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Usu\u00e1rios"
+                ],
+                "summary": "Atualiza um usu\u00e1rio existente.",
+                "operationId": "updateUser",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usu\u00e1rio atualizado com sucesso."
+                    },
+                    "404": {
+                        "description": "Usu\u00e1rio a ser atualizado n\u00e3o encontrado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Usu\u00e1rios"
+                ],
+                "summary": "Exclui um usu\u00e1rio.",
+                "operationId": "deleteUser",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Usu\u00e1rio exclu\u00eddo com sucesso."
+                    },
+                    "404": {
+                        "description": "Usu\u00e1rio n\u00e3o encontrado ou falha na exclus\u00e3o."
+                    }
+                }
+            }
+        },
+        "/customers": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Lista todos os clientes e seus endere\u00e7os.",
+                "operationId": "listCustomers",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Customer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso n\u00e3o autorizado."
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Cria um novo cliente e seus endere\u00e7os.",
+                "operationId": "createCustomer",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "customer",
+                                    "addresses"
+                                ],
+                                "properties": {
+                                    "customer": {
+                                        "$ref": "#/components/schemas/Customer"
+                                    },
+                                    "addresses": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Address"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente criado com sucesso."
+                    }
+                }
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Retorna um cliente espec\u00edfico com endere\u00e7os.",
+                "operationId": "getCustomerById",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes do cliente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Customer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente n\u00e3o encontrado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Atualiza um cliente e substitui todos os seus endere\u00e7os.",
+                "operationId": "updateCustomer",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "customer",
+                                    "addresses"
+                                ],
+                                "properties": {
+                                    "customer": {
+                                        "$ref": "#/components/schemas/Customer"
+                                    },
+                                    "addresses": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Address"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente e endere\u00e7os atualizados com sucesso."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Exclui um cliente.",
+                "operationId": "deleteCustomer",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Cliente exclu\u00eddo com sucesso."
+                    },
+                    "404": {
+                        "description": "Cliente n\u00e3o encontrado ou falha na exclus\u00e3o."
+                    }
+                }
+            }
+        }
+    }
+}
